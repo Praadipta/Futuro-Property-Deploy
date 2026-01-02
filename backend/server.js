@@ -84,6 +84,8 @@ app.use(cors({
     'https://buildestate.vercel.app',
     'https://real-estate-website-admin.onrender.com',
     'https://real-estate-website-backend-zfu7.onrender.com',
+    'https://futuro-property-frontend.vercel.app',
+    'https://futuro-property-admin.vercel.app',
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'], // Added HEAD
@@ -143,8 +145,8 @@ process.on('SIGTERM', () => {
 
 // Status check endpoint
 app.get('/status', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK', 
+  res.status(200).json({
+    status: 'OK',
     time: new Date().toISOString(),
     uptime: process.uptime(),
     version: process.env.npm_package_version || '1.0.0',
