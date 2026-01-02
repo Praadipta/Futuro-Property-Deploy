@@ -19,7 +19,7 @@ import {
   Zap,
   Crown,
 } from "lucide-react";
-import logo from "../assets/White.png";
+
 import { useAuth } from "../context/AuthContext";
 import PropTypes from "prop-types";
 
@@ -198,22 +198,24 @@ const Navbar = () => {
               {isLoggedIn ? (
                 <div className="flex items-center space-x-3">
                   {/* Notification Bell */}
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <Bell className="w-5 h-5 text-gray-600" />
-                    {notifications > 0 && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium"
-                      >
-                        {notifications}
-                      </motion.span>
-                    )}
-                  </motion.button>
+                  <Link to="/notifications">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <Bell className="w-5 h-5 text-gray-600" />
+                      {notifications > 0 && (
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium"
+                        >
+                          {notifications}
+                        </motion.span>
+                      )}
+                    </motion.button>
+                  </Link>
 
                   {/* User Profile Dropdown */}
                   <div className="relative" ref={dropdownRef}>
@@ -276,27 +278,44 @@ const Navbar = () => {
 
                           {/* Menu Items */}
                           <div className="py-2">
-                            <motion.button
-                              whileHover={{ x: 4, backgroundColor: "rgb(243 244 246)" }}
-                              className="w-full px-6 py-3 text-left text-sm text-gray-700 hover:text-blue-600 flex items-center space-x-3 transition-colors"
+                            <Link
+                              to="/profile"
+                              className="block"
                             >
-                              <UserCircle className="w-4 h-4" />
-                              <span>Profil Saya</span>
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ x: 4, backgroundColor: "rgb(243 244 246)" }}
-                              className="w-full px-6 py-3 text-left text-sm text-gray-700 hover:text-blue-600 flex items-center space-x-3 transition-colors"
+                              <motion.button
+                                whileHover={{ x: 4, backgroundColor: "rgb(243 244 246)" }}
+                                className="w-full px-6 py-3 text-left text-sm text-gray-700 hover:text-blue-600 flex items-center space-x-3 transition-colors"
+                              >
+                                <UserCircle className="w-4 h-4" />
+                                <span>Profil Saya</span>
+                              </motion.button>
+                            </Link>
+
+                            <Link
+                              to="/saved-properties"
+                              className="block"
                             >
-                              <Heart className="w-4 h-4" />
-                              <span>Properti Tersimpan</span>
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ x: 4, backgroundColor: "rgb(243 244 246)" }}
-                              className="w-full px-6 py-3 text-left text-sm text-gray-700 hover:text-blue-600 flex items-center space-x-3 transition-colors"
+                              <motion.button
+                                whileHover={{ x: 4, backgroundColor: "rgb(243 244 246)" }}
+                                className="w-full px-6 py-3 text-left text-sm text-gray-700 hover:text-blue-600 flex items-center space-x-3 transition-colors"
+                              >
+                                <Heart className="w-4 h-4" />
+                                <span>Properti Tersimpan</span>
+                              </motion.button>
+                            </Link>
+
+                            <Link
+                              to="/settings"
+                              className="block"
                             >
-                              <Settings className="w-4 h-4" />
-                              <span>Pengaturan</span>
-                            </motion.button>
+                              <motion.button
+                                whileHover={{ x: 4, backgroundColor: "rgb(243 244 246)" }}
+                                className="w-full px-6 py-3 text-left text-sm text-gray-700 hover:text-blue-600 flex items-center space-x-3 transition-colors"
+                              >
+                                <Settings className="w-4 h-4" />
+                                <span>Pengaturan</span>
+                              </motion.button>
+                            </Link>
                             <div className="border-t border-gray-100 my-2" />
                             <motion.button
                               whileHover={{ x: 4, backgroundColor: "rgb(254 242 242)" }}

@@ -3,7 +3,7 @@ import Property from '../models/propertymodel.js';
 import Appointment from '../models/appointmentModel.js';
 import User from '../models/Usermodel.js';
 import transporter from "../config/nodemailer.js";
-import { getSchedulingEmailTemplate,getEmailTemplate } from '../email.js';
+import { getSchedulingEmailTemplate, getEmailTemplate } from '../email.js';
 
 // Format helpers
 const formatRecentProperties = (properties) => {
@@ -121,7 +121,7 @@ const getViewsData = async () => {
       date.setDate(date.getDate() - i);
       const dateString = date.toISOString().split('T')[0];
       labels.push(dateString);
-      
+
       const stat = stats.find(s => s._id === dateString);
       data.push(stat ? stat.count : 0);
     }
@@ -188,7 +188,7 @@ export const getAllAppointments = async (req, res) => {
 export const updateAppointmentStatus = async (req, res) => {
   try {
     const { appointmentId, status } = req.body;
-    
+
     const appointment = await Appointment.findByIdAndUpdate(
       appointmentId,
       { status },
@@ -202,15 +202,20 @@ export const updateAppointmentStatus = async (req, res) => {
       });
     }
 
-    // Send email notification
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: appointment.userId.email,
-      subject: `Viewing Appointment ${status.charAt(0).toUpperCase() + status.slice(1)} - BuildEstate`,
-      html: getEmailTemplate(appointment, status)
-    };
-
-    await transporter.sendMail(mailOptions);
+    // Send email notification (non-blocking)
+    try {
+      if (transporter) {
+        const mailOptions = {
+          from: process.env.EMAIL || "noreply@futuroproperty.com",
+          to: appointment.userId.email,
+          subject: `Viewing Appointment ${status.charAt(0).toUpperCase() + status.slice(1)} - Futuro Property`,
+          html: getEmailTemplate(appointment, status)
+        };
+        await transporter.sendMail(mailOptions);
+      }
+    } catch (emailError) {
+      console.error("Failed to send status update email:", emailError);
+    }
 
     res.json({
       success: true,
@@ -230,9 +235,9 @@ export const updateAppointmentStatus = async (req, res) => {
 export const scheduleViewing = async (req, res) => {
   try {
     const { propertyId, date, time, notes } = req.body;
-    
+
     // req.user is set by the protect middleware
-    
+
 
     const userId = req.user._id;
 
@@ -272,15 +277,20 @@ export const scheduleViewing = async (req, res) => {
     await appointment.save();
     await appointment.populate(['propertyId', 'userId']);
 
-    // Send confirmation email
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: req.user.email,
-      subject: "Viewing Scheduled - BuildEstate",
-      html: getSchedulingEmailTemplate(appointment, date, time, notes)
-    };
-
-    await transporter.sendMail(mailOptions);
+    // Send confirmation email (non-blocking)
+    try {
+      if (transporter) {
+        const mailOptions = {
+          from: process.env.EMAIL || "noreply@futuroproperty.com",
+          to: req.user.email,
+          subject: "Viewing Scheduled - Futuro Property",
+          html: getSchedulingEmailTemplate(appointment, date, time, notes)
+        };
+        await transporter.sendMail(mailOptions);
+      }
+    } catch (emailError) {
+      console.error("Failed to send scheduling email:", emailError);
+    }
 
     res.status(201).json({
       success: true,
@@ -323,26 +333,31 @@ export const cancelAppointment = async (req, res) => {
     appointment.cancelReason = req.body.reason || 'Cancelled by user';
     await appointment.save();
 
-    // Send cancellation email
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: appointment.userId.email,
-      subject: 'Appointment Cancelled - BuildEstate',
-      html: `
-        <div style="max-width: 600px; margin: 20px auto; padding: 30px; background: #ffffff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-          <h1 style="color: #2563eb; text-align: center;">Appointment Cancelled</h1>
-          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p>Your viewing appointment for <strong>${appointment.propertyId.title}</strong> has been cancelled.</p>
-            <p><strong>Date:</strong> ${new Date(appointment.date).toLocaleDateString()}</p>
-            <p><strong>Time:</strong> ${appointment.time}</p>
-            ${appointment.cancelReason ? `<p><strong>Reason:</strong> ${appointment.cancelReason}</p>` : ''}
-          </div>
-          <p style="color: #4b5563;">You can schedule another viewing at any time.</p>
-        </div>
-      `
-    };
-
-    await transporter.sendMail(mailOptions);
+    // Send cancellation email (non-blocking)
+    try {
+      if (transporter) {
+        const mailOptions = {
+          from: process.env.EMAIL || "noreply@futuroproperty.com",
+          to: appointment.userId.email,
+          subject: 'Appointment Cancelled - Futuro Property',
+          html: `
+            <div style="max-width: 600px; margin: 20px auto; padding: 30px; background: #ffffff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+              <h1 style="color: #2563eb; text-align: center;">Appointment Cancelled</h1>
+              <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p>Your viewing appointment for <strong>${appointment.propertyId.title}</strong> has been cancelled.</p>
+                <p><strong>Date:</strong> ${new Date(appointment.date).toLocaleDateString()}</p>
+                <p><strong>Time:</strong> ${appointment.time}</p>
+                ${appointment.cancelReason ? `<p><strong>Reason:</strong> ${appointment.cancelReason}</p>` : ''}
+              </div>
+              <p style="color: #4b5563;">You can schedule another viewing at any time.</p>
+            </div>
+          `
+        };
+        await transporter.sendMail(mailOptions);
+      }
+    } catch (emailError) {
+      console.error("Failed to send cancellation email:", emailError);
+    }
 
     res.json({
       success: true,
@@ -380,7 +395,7 @@ export const getAppointmentsByUser = async (req, res) => {
 export const updateAppointmentMeetingLink = async (req, res) => {
   try {
     const { appointmentId, meetingLink } = req.body;
-    
+
     const appointment = await Appointment.findByIdAndUpdate(
       appointmentId,
       { meetingLink },
@@ -394,33 +409,38 @@ export const updateAppointmentMeetingLink = async (req, res) => {
       });
     }
 
-    // Send email notification with meeting link
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: appointment.userId.email,
-      subject: "Meeting Link Updated - BuildEstate",
-      html: `
-        <div style="max-width: 600px; margin: 20px auto; font-family: 'Arial', sans-serif; line-height: 1.6;">
-          <div style="background: linear-gradient(135deg, #2563eb, #1e40af); padding: 40px 20px; border-radius: 15px 15px 0 0; text-align: center;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Meeting Link Updated</h1>
-          </div>
-          <div style="background: #ffffff; padding: 40px 30px; border-radius: 0 0 15px 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
-            <p>Your viewing appointment for <strong>${appointment.propertyId.title}</strong> has been updated with a meeting link.</p>
-            <p><strong>Date:</strong> ${new Date(appointment.date).toLocaleDateString()}</p>
-            <p><strong>Time:</strong> ${appointment.time}</p>
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${meetingLink}" 
-                 style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #2563eb, #1e40af); 
-                        color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
-                Join Meeting
-              </a>
+    // Send email notification with meeting link (non-blocking)
+    try {
+      if (transporter) {
+        const mailOptions = {
+          from: process.env.EMAIL,
+          to: appointment.userId.email,
+          subject: "Meeting Link Updated - Futuro Property",
+          html: `
+            <div style="max-width: 600px; margin: 20px auto; font-family: 'Arial', sans-serif; line-height: 1.6;">
+              <div style="background: linear-gradient(135deg, #2563eb, #1e40af); padding: 40px 20px; border-radius: 15px 15px 0 0; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Meeting Link Updated</h1>
+              </div>
+              <div style="background: #ffffff; padding: 40px 30px; border-radius: 0 0 15px 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+                <p>Your viewing appointment for <strong>${appointment.propertyId.title}</strong> has been updated with a meeting link.</p>
+                <p><strong>Date:</strong> ${new Date(appointment.date).toLocaleDateString()}</p>
+                <p><strong>Time:</strong> ${appointment.time}</p>
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${meetingLink}" 
+                     style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #2563eb, #1e40af); 
+                            color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                    Join Meeting
+                  </a>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      `
-    };
-
-    await transporter.sendMail(mailOptions);
+          `
+        };
+        await transporter.sendMail(mailOptions);
+      }
+    } catch (emailError) {
+      console.error("Failed to send meeting link email:", emailError);
+    }
 
     res.json({
       success: true,
@@ -535,9 +555,9 @@ export const getUpcomingAppointments = async (req, res) => {
       date: { $gte: now },
       status: { $in: ['pending', 'confirmed'] }
     })
-    .populate('propertyId', 'title location image')
-    .sort({ date: 1, time: 1 })
-    .limit(5);
+      .populate('propertyId', 'title location image')
+      .sort({ date: 1, time: 1 })
+      .limit(5);
 
     res.json({
       success: true,

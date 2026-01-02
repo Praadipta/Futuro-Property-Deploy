@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Instagram, Mail, MessageCircle } from 'lucide-react';
+import { Instagram, Mail, MessageCircle, MapPin } from 'lucide-react';
 import ContactInfoItem from './InfoItem';
 
 // Custom TikTok icon component since lucide-react doesn't have TikTok
@@ -34,6 +34,12 @@ const contactInfo = [
     title: 'Email',
     content: 'contact@futuroproperty.com',
     link: 'mailto:contact@futuroproperty.com', // Replace with your email
+  },
+  {
+    icon: MapPin, // Importing MapPin below
+    title: 'Alamat',
+    content: 'Studio Pixel Pop',
+    link: 'https://maps.google.com/?q=Studio+Pixel+Pop',
   },
 ];
 

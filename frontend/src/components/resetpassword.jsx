@@ -15,7 +15,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { Backendurl } from "../App";
+import { Backendurl } from "../config";
 
 // Enhanced Animation Variants
 const containerVariants = {
@@ -396,8 +396,8 @@ const ResetPassword = () => {
               type="submit"
               disabled={loading || !isFormValid}
               className={`w-full py-4 rounded-xl text-white font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-2 shadow-xl ${isFormValid && !loading
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/25"
-                  : "bg-gray-400 cursor-not-allowed"
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/25"
+                : "bg-gray-400 cursor-not-allowed"
                 }`}
             >
               {loading ? (

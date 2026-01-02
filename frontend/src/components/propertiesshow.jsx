@@ -14,7 +14,7 @@ import {
   Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Backendurl } from '../App';
+import { Backendurl } from '../config';
 import PropTypes from "prop-types";
 
 // Sample featured properties for fallback
@@ -27,7 +27,7 @@ const sampleProperties = [
     beds: 4,
     baths: 3,
     sqft: 2800,
-    type: "Villa",
+    type: "Vila",
     availability: "Buy",
     image: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"]
   },
@@ -39,7 +39,7 @@ const sampleProperties = [
     beds: 3,
     baths: 2,
     sqft: 1800,
-    type: "Apartment",
+    type: "Apartemen",
     availability: "Rent",
     image: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"]
   },
@@ -51,7 +51,7 @@ const sampleProperties = [
     beds: 3,
     baths: 2.5,
     sqft: 2200,
-    type: "House",
+    type: "Rumah",
     availability: "Buy",
     image: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"]
   }
@@ -63,7 +63,7 @@ const PropertyCard = ({ property }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleNavigate = () => {
-    navigate(`/ properties / single / ${property._id} `);
+    navigate(`/properties/single/${property._id}`);
   };
 
   const toggleFavorite = (e) => {
@@ -96,25 +96,25 @@ const PropertyCard = ({ property }) => {
           <span className="bg-blue-600 text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-md">
             {property.type}
           </span>
-          <span className={`text - xs font - medium px - 3 py - 1.5 rounded - full shadow - md 
+          <span className={`text-xs font-medium px-3 py-1.5 rounded-full shadow-md 
             ${property.availability === 'Rent'
               ? 'bg-green-600 text-white'
               : 'bg-purple-600 text-white'
-            } `}>
-            For {property.availability}
+            }`}>
+            {property.availability === 'Rent' ? 'Disewakan' : 'Dijual'}
           </span>
         </div>
 
         {/* Favorite button */}
         <button
           onClick={toggleFavorite}
-          className={`absolute top - 4 right - 4 p - 2 rounded - full transition - all duration - 300 
+          className={`absolute top-4 right-4 p-2 rounded-full transition-all duration-300 
             ${isFavorite
               ? 'bg-red-500 text-white'
               : 'bg-white/80 backdrop-blur-sm text-gray-700 hover:text-red-500'
-            } `}
+            }`}
         >
-          <Heart className={`w - 5 h - 5 ${isFavorite ? 'fill-current' : ''} `} />
+          <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
         </button>
 
         {/* View overlay on hover */}
@@ -134,7 +134,7 @@ const PropertyCard = ({ property }) => {
                 className="px-5 py-3 bg-white text-blue-600 rounded-lg font-medium flex items-center gap-2 shadow-lg"
               >
                 <Eye className="w-5 h-5" />
-                View Details
+                Lihat Detail
               </motion.div>
             </motion.div>
           )}
@@ -156,15 +156,15 @@ const PropertyCard = ({ property }) => {
         <div className="flex justify-between items-center py-3 border-y border-gray-100 mb-4">
           <div className="flex items-center gap-1">
             <BedDouble className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-gray-600">{property.beds} {property.beds > 1 ? 'Beds' : 'Bed'}</span>
+            <span className="text-sm text-gray-600">{property.beds} {property.beds > 1 ? 'Kamar' : 'Kamar'}</span>
           </div>
           <div className="flex items-center gap-1">
             <Bath className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-gray-600">{property.baths} {property.baths > 1 ? 'Baths' : 'Bath'}</span>
+            <span className="text-sm text-gray-600">{property.baths} {property.baths > 1 ? 'KM' : 'KM'}</span>
           </div>
           <div className="flex items-center gap-1">
             <Maximize className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-gray-600">{property.sqft} sqft</span>
+            <span className="text-sm text-gray-600">{property.sqft} m²</span>
           </div>
         </div>
 
@@ -176,7 +176,7 @@ const PropertyCard = ({ property }) => {
 
           <div className="text-sm bg-blue-50 text-blue-700 px-2 py-1 rounded-md flex items-center">
             <Building className="w-3.5 h-3.5 mr-1" />
-            {property.availability === 'Rent' ? 'Rental' : 'Purchase'}
+            {property.availability === 'Rent' ? 'Sewa' : 'Beli'}
           </div>
         </div>
       </div>
@@ -192,10 +192,10 @@ const PropertiesShow = () => {
   const navigate = useNavigate();
 
   const categories = [
-    { id: 'all', label: 'All Properties' },
-    { id: 'apartment', label: 'Apartments' },
-    { id: 'villa', label: 'Villas' },
-    { id: 'house', label: 'Houses' }
+    { id: 'all', label: 'Semua Properti' },
+    { id: 'apartemen', label: 'Apartemen' },
+    { id: 'vila', label: 'Vila' },
+    { id: 'rumah', label: 'Rumah' }
   ];
 
   const containerVariants = {
@@ -225,20 +225,20 @@ const PropertiesShow = () => {
     const fetchProperties = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${Backendurl} /api/products / list`);
+        const response = await axios.get(`${Backendurl}/api/products/list`);
 
         if (response.data.success) {
           // Take only the first 6 properties for featured section
           const featuredProperties = response.data.property.slice(0, 6);
           setProperties(featuredProperties);
         } else {
-          setError('Failed to fetch properties');
+          setError('Gagal mengambil data properti');
           // Fallback to sample data in case of API error
           setProperties(sampleProperties);
         }
       } catch (err) {
         console.error('Error fetching properties:', err);
-        setError('Failed to load properties. Using sample data instead.');
+        setError('Gagal memuat properti. Menggunakan data contoh.');
         // Fallback to sample data
         setProperties(sampleProperties);
       } finally {
@@ -301,13 +301,13 @@ const PropertiesShow = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-blue-600 font-semibold tracking-wide uppercase text-sm">Explore Properties</span>
+          <span className="text-blue-600 font-semibold tracking-wide uppercase text-sm">JELAJAHI PROPERTI</span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-2 mb-4">
-            Featured Properties
+            Properti Unggulan
           </h2>
           <div className="w-24 h-1 bg-blue-600 mx-auto mb-6"></div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Discover our handpicked selection of premium properties designed to match your lifestyle needs
+            Temukan pilihan properti premium kami yang dirancang untuk memenuhi gaya hidup Anda
           </p>
         </motion.div>
 
@@ -322,11 +322,11 @@ const PropertiesShow = () => {
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`px - 6 py - 2.5 rounded - full font - medium text - sm transition - all duration - 200
+              className={`px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-200
                 ${activeCategory === category.id
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                   : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm'
-                } `}
+                }`}
             >
               {category.label}
             </button>
@@ -339,8 +339,8 @@ const PropertiesShow = () => {
             animate={{ opacity: 1 }}
             className="text-amber-700 bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8 max-w-md mx-auto text-center"
           >
-            <p className="font-medium mb-1">Note: {error}</p>
-            <p className="text-sm">Showing sample properties for demonstration.</p>
+            <p className="font-medium mb-1">Catatan: {error}</p>
+            <p className="text-sm">Menampilkan contoh properti untuk demonstrasi.</p>
           </motion.div>
         )}
 
@@ -360,13 +360,13 @@ const PropertiesShow = () => {
         ) : (
           <div className="text-center py-10 bg-white rounded-xl shadow-sm">
             <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-medium text-gray-800 mb-2">No properties available</h3>
-            <p className="text-gray-600 mb-6">No properties found in this category.</p>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">Tidak ada properti tersedia</h3>
+            <p className="text-gray-600 mb-6">Tidak ada properti ditemukan dalam kategori ini.</p>
             <button
               onClick={() => setActiveCategory('all')}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              View All Properties
+              Lihat Semua Properti
             </button>
           </div>
         )}
@@ -381,11 +381,11 @@ const PropertiesShow = () => {
             onClick={viewAllProperties}
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 font-medium"
           >
-            Browse All Properties
+            Telusuri Semua Properti
             <ArrowRight className="ml-2 w-4 h-4" />
           </button>
           <p className="text-gray-600 mt-4 text-sm">
-            Discover our complete collection of premium properties
+            Temukan koleksi lengkap properti premium kami
           </p>
         </motion.div>
       </div>

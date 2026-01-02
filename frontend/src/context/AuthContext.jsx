@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
-import { Backendurl } from "../App";
+import { Backendurl } from "../config";
 
 const AuthContext = createContext(null);
 

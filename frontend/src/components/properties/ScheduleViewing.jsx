@@ -3,7 +3,7 @@ import { Calendar, Clock, Loader, X, Info, CheckCircle, Users, MapPin } from 'lu
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Backendurl } from '../../App';
+import { Backendurl } from '../../config';
 
 const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, propertyImage, onClose }) => {
   const [formData, setFormData] = useState({
@@ -30,10 +30,10 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
     const today = new Date();
     const maxDate = new Date();
     maxDate.setDate(today.getDate() + 30);
-    
+
     // Set time to beginning of day for accurate comparison
     today.setHours(0, 0, 0, 0);
-    
+
     return {
       min: today.toISOString().split('T')[0],
       max: maxDate.toISOString().split('T')[0]
@@ -80,14 +80,14 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
         toast.error('Please login to schedule a viewing');
         return;
       }
-    
+
       setLoading(true);
       const response = await axios.post(
-        `${Backendurl}/api/appointments/schedule`, 
+        `${Backendurl}/api/appointments/schedule`,
         {
           propertyId,
           ...formData
-        }, 
+        },
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -95,7 +95,7 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
           }
         }
       );
-  
+
       if (response.data.success) {
         setIsSuccess(true);
         setTimeout(() => {
@@ -149,9 +149,9 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
               <div className="flex items-center mb-4 pb-3 border-b border-gray-100">
                 {propertyImage && (
                   <div className="mr-4 flex-shrink-0">
-                    <img 
-                      src={propertyImage} 
-                      alt={propertyTitle} 
+                    <img
+                      src={propertyImage}
+                      alt={propertyTitle}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
                   </div>
@@ -236,8 +236,8 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
                         >
                           <option value="">Choose a time slot</option>
                           {timeSlots.map((slot) => (
-                            <option 
-                              key={slot} 
+                            <option
+                              key={slot}
                               value={slot}
                               disabled={formData.date === dateRestrictions.min && isPastTime(slot)}
                             >
@@ -282,8 +282,8 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
                     <div className="bg-blue-50 rounded-lg p-4 mb-4">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-sm font-medium text-gray-900">Selected Time</h3>
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           onClick={() => setStep(1)}
                           className="text-xs text-blue-600 hover:text-blue-800"
                         >
@@ -354,12 +354,12 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
-              
+
               <h3 className="text-xl font-bold text-gray-900 mb-2">Viewing Scheduled!</h3>
               <p className="text-gray-600 mb-6">
                 We've sent you a confirmation email with all the details.
               </p>
-              
+
               <div className="bg-blue-50 rounded-lg p-4 max-w-xs mx-auto mb-6">
                 <div className="flex items-center mb-2">
                   <Calendar className="w-4 h-4 text-blue-600 mr-2" />
@@ -376,11 +376,11 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
                   </div>
                 )}
               </div>
-              
+
               <p className="text-sm text-gray-500 mb-6">
                 One of our agents will contact you to confirm the details.
               </p>
-              
+
               <button
                 onClick={onClose}
                 className="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors"
@@ -389,7 +389,7 @@ const ScheduleViewing = ({ propertyId, propertyTitle, propertyLocation, property
               </button>
             </motion.div>
           )}
-          
+
           {/* Additional services info */}
           {!isSuccess && (
             <div className="mt-6 pt-4 border-t border-gray-100">

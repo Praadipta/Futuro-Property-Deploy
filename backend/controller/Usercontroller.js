@@ -44,6 +44,13 @@ const login = async (req, res) => {
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res.json({ message: "User already exists", success: false });
+    }
+
     if (!validator.isEmail(email)) {
       return res.json({ message: "Invalid email", success: false });
     }
@@ -52,15 +59,23 @@ const register = async (req, res) => {
     await newUser.save();
     const token = createtoken(newUser._id);
 
-    // send email
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: email,
-      subject: "Welcome to BuildEstate - Your Account Has Been Created",
-      html: getWelcomeTemplate(name)
-    };
-
-    await transporter.sendMail(mailOptions);
+    // send email (non-blocking)
+    try {
+      if (transporter) {
+        const mailOptions = {
+          from: process.env.EMAIL || "noreply@futuroproperty.com",
+          to: email,
+          subject: "Welcome to Futuro Property - Your Account Has Been Created",
+          html: getWelcomeTemplate(name)
+        };
+        await transporter.sendMail(mailOptions);
+      } else {
+        console.warn("Email transporter not configured, skipping welcome email.");
+      }
+    } catch (emailError) {
+      console.error("Failed to send welcome email:", emailError);
+      // Continue execution - do not fail registration
+    }
 
     return res.json({ token, user: { name: newUser.name, email: newUser.email }, success: true });
   } catch (error) {
@@ -135,12 +150,12 @@ const adminlogin = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-    try {
-        return res.json({ message: "Logged out", success: true });
-    } catch (error) {
-        console.error(error);
-        return res.json({ message: "Server error", success: false });
-    }
+  try {
+    return res.json({ message: "Logged out", success: true });
+  } catch (error) {
+    console.error(error);
+    return res.json({ message: "Server error", success: false });
+  }
 };
 
 // get name and email

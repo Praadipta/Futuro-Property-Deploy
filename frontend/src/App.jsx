@@ -18,9 +18,13 @@ import { AuthProvider } from './context/AuthContext';
 import AIPropertyHub from './pages/Aiagent'
 import StructuredData from './components/SEO/StructuredData';
 import 'react-toastify/dist/ReactToastify.css';
+import Profile from './pages/Profile';
+import SavedProperties from './pages/SavedProperties';
+import Settings from './pages/Settings';
+import Notifications from './pages/Notifications';
 
 
-export const Backendurl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+
 
 const App = () => {
   return (
@@ -42,6 +46,10 @@ const App = () => {
             <Route path="/properties/single/:id" element={<PropertyDetails />} />
             <Route path="/about" element={<Aboutus />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/saved-properties" element={<SavedProperties />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="/ai-property-hub" element={<AIPropertyHub />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

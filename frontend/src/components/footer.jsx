@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import { Backendurl } from '../App';
+import { Backendurl } from '../config';
 import PropTypes from 'prop-types';
 
 // Enhanced Animation Variants
@@ -349,8 +349,8 @@ const helpLinks = [
 const contactInfo = [
   {
     icon: MapPin,
-    text: 'Solo, Jawa Tengah, Indonesia',
-    href: 'https://maps.google.com/?q=Solo,Jawa+Tengah,Indonesia'
+    text: 'Studio Pixel Pop',
+    href: 'https://maps.google.com/?q=Studio+Pixel+Pop'
   },
   {
     icon: Phone,

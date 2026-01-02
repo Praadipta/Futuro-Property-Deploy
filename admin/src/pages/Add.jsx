@@ -4,8 +4,8 @@ import axios from 'axios';
 import { backendurl } from '../config/constants';
 import { Upload, X } from 'lucide-react';
 
-const PROPERTY_TYPES = ['House', 'Apartment', 'Office', 'Villa'];
-const AVAILABILITY_TYPES = ['rent', 'buy'];
+const PROPERTY_TYPES = ['Rumah', 'Apartemen', 'Kantor', 'Vila'];
+const AVAILABILITY_TYPES = ['mesh', 'meeting room', 'homestay'];
 
 const PropertyForm = () => {
   const [formData, setFormData] = useState({

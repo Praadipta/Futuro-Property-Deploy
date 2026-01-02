@@ -15,7 +15,7 @@ import {
   User,
   Key
 } from "lucide-react";
-import { Backendurl } from "../App";
+import { Backendurl } from "../config";
 import { toast } from "react-toastify";
 import { useAuth } from '../context/AuthContext';
 

@@ -5,7 +5,7 @@ import { Grid, List, SlidersHorizontal, MapPin, Home } from "lucide-react";
 import SearchBar from "./Searchbar.jsx";
 import FilterSection from "./Filtersection.jsx";
 import PropertyCard from "./Propertycard.jsx";
-import { Backendurl } from "../../App.jsx";
+import { Backendurl } from "../../config";
 
 const PropertiesPage = () => {
   const [viewState, setViewState] = useState({

@@ -18,7 +18,7 @@ import {
   Copy,
   Compass
 } from "lucide-react";
-import { Backendurl } from "../../App.jsx";
+import { Backendurl } from "../../config";
 import ScheduleViewing from "./ScheduleViewing";
 
 const PropertyDetails = () => {

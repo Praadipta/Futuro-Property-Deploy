@@ -189,7 +189,7 @@ const Hero = () => {
                   <RadialGradient
                     gradient={["circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%"]}
                   >
-                    Temukan Rumah Impian
+                    Temukan Ruangan Impian
                   </RadialGradient>
                   <br />
                   <span className="text-gray-900 bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent">
