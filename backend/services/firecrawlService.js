@@ -3,12 +3,27 @@ import { config } from '../config/config.js';
 
 class FirecrawlService {
     constructor() {
-        this.firecrawl = new FirecrawlApp({
-            apiKey: config.firecrawlApiKey
-        });
+        // Only initialize Firecrawl if API key is provided
+        if (config.firecrawlApiKey) {
+            this.firecrawl = new FirecrawlApp({
+                apiKey: config.firecrawlApiKey
+            });
+            this.isAvailable = true;
+        } else {
+            console.log('FirecrawlService: No API key provided. AI property search features will be disabled.');
+            this.firecrawl = null;
+            this.isAvailable = false;
+        }
+    }
+
+    checkAvailability() {
+        if (!this.isAvailable) {
+            throw new Error('Firecrawl service is not available. Please configure FIRECRAWL_API_KEY.');
+        }
     }
 
     async findProperties(city, maxPrice, propertyCategory = "Residential", propertyType = "Flat", limit = 6) {
+        this.checkAvailability();
         try {
             const formattedLocation = city.toLowerCase().replace(/\s+/g, '-');
 
@@ -99,6 +114,7 @@ class FirecrawlService {
     }
 
     async getLocationTrends(city, limit = 5) {
+        this.checkAvailability();
         try {
             const formattedLocation = city.toLowerCase().replace(/\s+/g, '-');
 
