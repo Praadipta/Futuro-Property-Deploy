@@ -156,7 +156,7 @@ const removeproperty = async (req, res) => {
 
 const updateproperty = async (req, res) => {
     try {
-        const { id, title, location, price, beds, baths, sqft, type, availability, description, amenities, phone } = req.body;
+        const { id, title, location, price, beds, baths, sqft, type, availability, description, amenities, phone, existingImages } = req.body;
 
         const property = await Property.findById(id);
         if (!property) {
@@ -164,76 +164,84 @@ const updateproperty = async (req, res) => {
             return res.status(404).json({ message: "Property not found", success: false });
         }
 
-        if (!req.files) {
-            // No new images provided
-            property.title = title;
-            property.location = location;
-            property.price = price;
-            property.beds = beds;
-            property.baths = baths;
-            property.sqft = sqft;
-            property.type = type;
-            property.availability = availability;
-            property.description = description;
-            property.amenities = parseAmenities(amenities);
-            property.phone = phone;
-            // Keep existing images
-            await property.save();
-            return res.json({ message: "Property updated successfully", success: true });
+        // Parse existing images from the request
+        let parsedExistingImages = [];
+        if (existingImages) {
+            try {
+                parsedExistingImages = JSON.parse(existingImages);
+                if (!Array.isArray(parsedExistingImages)) {
+                    parsedExistingImages = [];
+                }
+            } catch (e) {
+                console.log("Error parsing existingImages:", e);
+                parsedExistingImages = [];
+            }
         }
 
-        const image1 = req.files.image1 && req.files.image1[0];
-        const image2 = req.files.image2 && req.files.image2[0];
-        const image3 = req.files.image3 && req.files.image3[0];
-        const image4 = req.files.image4 && req.files.image4[0];
+        // Handle new image uploads
+        const image1 = req.files?.image1?.[0];
+        const image2 = req.files?.image2?.[0];
+        const image3 = req.files?.image3?.[0];
+        const image4 = req.files?.image4?.[0];
 
-        const images = [image1, image2, image3, image4].filter((item) => item !== undefined);
-        let imageUrls = [];
+        const newImageFiles = [image1, image2, image3, image4].filter((item) => item !== undefined);
+        let newImageUrls = [];
 
-        // Check if ImageKit keys are configured (simple check)
+        // Check if ImageKit keys are configured
         const isImageKitConfigured = process.env.IMAGEKIT_PUBLIC_KEY &&
             !process.env.IMAGEKIT_PUBLIC_KEY.includes('your_') &&
             process.env.IMAGEKIT_PRIVATE_KEY &&
             !process.env.IMAGEKIT_PRIVATE_KEY.includes('your_');
 
-        if (isImageKitConfigured && images.length > 0) {
-            try {
-                // Upload images to ImageKit and delete after upload
-                imageUrls = await Promise.all(
-                    images.map(async (item) => {
-                        const result = await imagekit.upload({
-                            file: fs.readFileSync(item.path),
-                            fileName: item.originalname,
-                            folder: "Property",
-                        });
-                        fs.unlink(item.path, (err) => {
-                            if (err) console.log("Error deleting the file: ", err);
-                        });
-                        return result.url;
-                    })
-                );
-            } catch (uploadError) {
-                console.warn("ImageKit upload failed, falling back to mock images:", uploadError.message);
-                // Fallback: keep existing images or use new random ones? 
-                // If updating, maybe we want to keep old ones if upload fails, 
-                // OR use random ones if the user specifically tried to change them.
-                // Let's use random ones to signal "change happened" but visually it's a placeholder.
-                imageUrls = getFallbackImages();
-            }
-        } else {
-            console.log("ImageKit not configured or no images provided, using fallback images.");
-            // CLEANUP
-            images.forEach(item => {
-                if (fs.existsSync(item.path)) {
-                    fs.unlink(item.path, (err) => {
-                        if (err) console.log("Error deleting temp file: ", err);
+        // Upload new images if any
+        if (newImageFiles.length > 0) {
+            if (isImageKitConfigured) {
+                try {
+                    newImageUrls = await Promise.all(
+                        newImageFiles.map(async (item) => {
+                            const result = await imagekit.upload({
+                                file: fs.readFileSync(item.path),
+                                fileName: item.originalname,
+                                folder: "Property",
+                            });
+                            fs.unlink(item.path, (err) => {
+                                if (err) console.log("Error deleting the file: ", err);
+                            });
+                            return result.url;
+                        })
+                    );
+                } catch (uploadError) {
+                    console.warn("ImageKit upload failed:", uploadError.message);
+                    // Clean up temp files
+                    newImageFiles.forEach(item => {
+                        if (fs.existsSync(item.path)) {
+                            fs.unlink(item.path, (err) => {
+                                if (err) console.log("Error deleting temp file: ", err);
+                            });
+                        }
                     });
                 }
-            });
-            // If manual update without keys, stick to fallback
-            imageUrls = getFallbackImages();
+            } else {
+                console.log("ImageKit not configured, cleaning up uploaded files.");
+                newImageFiles.forEach(item => {
+                    if (fs.existsSync(item.path)) {
+                        fs.unlink(item.path, (err) => {
+                            if (err) console.log("Error deleting temp file: ", err);
+                        });
+                    }
+                });
+            }
         }
 
+        // Combine existing images with newly uploaded images
+        let finalImageUrls = [...parsedExistingImages, ...newImageUrls];
+
+        // If no images at all, keep the current property images
+        if (finalImageUrls.length === 0) {
+            finalImageUrls = property.image || [];
+        }
+
+        // Update property fields
         property.title = title;
         property.location = location;
         property.price = price;
@@ -244,7 +252,7 @@ const updateproperty = async (req, res) => {
         property.availability = availability;
         property.description = description;
         property.amenities = parseAmenities(amenities);
-        property.image = imageUrls;
+        property.image = finalImageUrls;
         property.phone = phone;
 
         await property.save();

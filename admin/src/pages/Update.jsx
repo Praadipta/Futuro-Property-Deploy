@@ -9,6 +9,43 @@ const PROPERTY_TYPES = ['Rumah', 'Apartemen', 'Kantor', 'Vila'];
 const AVAILABILITY_TYPES = ['mesh', 'meeting room', 'homestay'];
 const AMENITIES = ['Lake View', 'Fireplace', 'Central heating and air conditioning', 'Dock', 'Pool', 'Garage', 'Garden', 'Gym', 'Security system', 'Master bathroom', 'Guest bathroom', 'Home theater', 'Exercise room/gym', 'Covered parking', 'High-speed internet ready'];
 
+// Helper function to parse amenities from various formats
+const parseAmenities = (amenities) => {
+  if (!amenities) return [];
+
+  // If it's already an array
+  if (Array.isArray(amenities)) {
+    // Check if the first element is a JSON string that needs parsing
+    if (amenities.length > 0 && typeof amenities[0] === 'string') {
+      try {
+        const parsed = JSON.parse(amenities[0]);
+        if (Array.isArray(parsed)) {
+          return parsed.flat().filter(item => typeof item === 'string' && item.trim() !== '');
+        }
+      } catch (e) {
+        // Not a JSON string, return the array as-is
+        return amenities.filter(item => typeof item === 'string' && item.trim() !== '');
+      }
+    }
+    return amenities.filter(item => typeof item === 'string' && item.trim() !== '');
+  }
+
+  // If it's a JSON string, parse it
+  if (typeof amenities === 'string') {
+    try {
+      const parsed = JSON.parse(amenities);
+      if (Array.isArray(parsed)) {
+        return parsed.flat().filter(item => typeof item === 'string' && item.trim() !== '');
+      }
+      return [amenities];
+    } catch (e) {
+      return amenities.trim() ? [amenities.trim()] : [];
+    }
+  }
+
+  return [];
+};
+
 const Update = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -27,6 +64,8 @@ const Update = () => {
     images: []
   });
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [existingImageUrls, setExistingImageUrls] = useState([]); // Track original image URLs
+  const [newImages, setNewImages] = useState([]); // Track newly uploaded files
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -36,6 +75,7 @@ const Update = () => {
         console.log('Response:', response); // Log the response
         if (response.data.success) {
           const property = response.data.property;
+          const parsedAmenities = parseAmenities(property.amenities);
           setFormData({
             title: property.title,
             type: property.type,
@@ -47,10 +87,12 @@ const Update = () => {
             sqft: property.sqft,
             phone: property.phone,
             availability: property.availability,
-            amenities: property.amenities,
+            amenities: parsedAmenities,
             images: property.image
           });
           setPreviewUrls(property.image);
+          setExistingImageUrls(property.image); // Store original image URLs
+          setNewImages([]); // Reset new images
         } else {
           toast.error(response.data.message);
         }
@@ -82,20 +124,42 @@ const Update = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setPreviewUrls(files.map((file) => URL.createObjectURL(file)));
-    setFormData((prev) => ({
-      ...prev,
-      images: files
-    }));
+    const totalImages = existingImageUrls.length + newImages.length + files.length;
+
+    if (totalImages > 4) {
+      toast.error('Maksimal 4 gambar diperbolehkan');
+      return;
+    }
+
+    // Add new files to the newImages array
+    setNewImages(prev => [...prev, ...files]);
+
+    // Update preview URLs to show both existing and new images
+    const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+    setPreviewUrls([...existingImageUrls, ...newImages.map(f => URL.createObjectURL(f)), ...newPreviewUrls]);
   };
 
   const removeImage = (index) => {
-    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
+    const totalExisting = existingImageUrls.length;
+
+    if (index < totalExisting) {
+      // Removing an existing image
+      setExistingImageUrls(prev => prev.filter((_, i) => i !== index));
+    } else {
+      // Removing a new image
+      const newImageIndex = index - totalExisting;
+      setNewImages(prev => prev.filter((_, i) => i !== newImageIndex));
+    }
+
+    // Recalculate preview URLs
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
+
+  // Update preview URLs when existingImageUrls or newImages change
+  useEffect(() => {
+    const newPreviews = newImages.map(file => URL.createObjectURL(file));
+    setPreviewUrls([...existingImageUrls, ...newPreviews]);
+  }, [existingImageUrls, newImages]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -115,7 +179,12 @@ const Update = () => {
       formdata.append('phone', formData.phone);
       formdata.append('availability', formData.availability);
       formdata.append('amenities', JSON.stringify(formData.amenities));
-      formData.images.forEach((image, index) => {
+
+      // Send existing image URLs as a JSON string
+      formdata.append('existingImages', JSON.stringify(existingImageUrls));
+
+      // Only append new image files
+      newImages.forEach((image, index) => {
         formdata.append(`image${index + 1}`, image);
       });
 
