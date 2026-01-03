@@ -1,28 +1,69 @@
-import { Home, IndianRupee, Filter } from "lucide-react";
+import { Home, Banknote, Filter, BedDouble, Bath, Tag } from "lucide-react";
 import { motion } from "framer-motion";
 
-const propertyTypes = ["House", "Apartment", "Villa", "Office"];
-const availabilityTypes = ["Rent", "Buy", "Lease"];
-const priceRanges = [
-  { min: 0, max: 5000000, label: "Under Rp50L" },
-  { min: 5000000, max: 10000000, label: "Rp50L - Rp1Cr" },
-  { min: 10000000, max: 20000000, label: "Rp1Cr - Rp2Cr" },
-  { min: 20000000, max: Number.MAX_SAFE_INTEGER, label: "Above Rp2Cr" }
+// Property types matching admin panel (Indonesian)
+const propertyTypes = [
+  { value: "rumah", label: "Rumah" },
+  { value: "apartemen", label: "Apartemen" },
+  { value: "kantor", label: "Kantor" },
+  { value: "vila", label: "Vila" }
 ];
 
+// Availability types matching admin panel
+const availabilityTypes = [
+  { value: "mesh", label: "Mesh" },
+  { value: "meeting room", label: "Meeting Room" },
+  { value: "homestay", label: "Homestay" }
+];
+
+// Price ranges in Rupiah (adjusted for realistic property prices)
+const priceRanges = [
+  { min: 0, max: 500000, label: "< Rp 500rb" },
+  { min: 500000, max: 1000000, label: "Rp 500rb - 1jt" },
+  { min: 1000000, max: 5000000, label: "Rp 1jt - 5jt" },
+  { min: 5000000, max: Number.MAX_SAFE_INTEGER, label: "> Rp 5jt" }
+];
+
+// Bedroom options
+const bedroomOptions = ["0", "1", "2", "3", "4", "5+"];
+
+// Bathroom options
+const bathroomOptions = ["0", "1", "2", "3", "4+"];
+
 const FilterSection = ({ filters, setFilters, onApplyFilters }) => {
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handlePropertyTypeChange = (value) => {
     setFilters(prev => ({
       ...prev,
-      [name]: value
+      propertyType: prev.propertyType === value ? "" : value
+    }));
+  };
+
+  const handleAvailabilityChange = (value) => {
+    setFilters(prev => ({
+      ...prev,
+      availability: prev.availability === value ? "" : value
     }));
   };
 
   const handlePriceRangeChange = (min, max) => {
+    const isCurrentlySelected = filters.priceRange[0] === min && filters.priceRange[1] === max;
     setFilters(prev => ({
       ...prev,
-      priceRange: [min, max]
+      priceRange: isCurrentlySelected ? [0, Number.MAX_SAFE_INTEGER] : [min, max]
+    }));
+  };
+
+  const handleBedroomsChange = (value) => {
+    setFilters(prev => ({
+      ...prev,
+      bedrooms: prev.bedrooms === value ? "0" : value
+    }));
+  };
+
+  const handleBathroomsChange = (value) => {
+    setFilters(prev => ({
+      ...prev,
+      bathrooms: prev.bathrooms === value ? "0" : value
     }));
   };
 
@@ -38,6 +79,8 @@ const FilterSection = ({ filters, setFilters, onApplyFilters }) => {
     });
   };
 
+  const isPriceRangeDefault = filters.priceRange[0] === 0 && filters.priceRange[1] === Number.MAX_SAFE_INTEGER;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -49,53 +92,73 @@ const FilterSection = ({ filters, setFilters, onApplyFilters }) => {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center space-x-2">
           <Filter className="w-5 h-5 text-blue-600" />
-          <h2 className="text-lg font-semibold">Filters</h2>
+          <h2 className="text-lg font-semibold">Filter</h2>
         </div>
         <button
           onClick={handleReset}
           className="text-sm text-blue-600 hover:text-blue-700"
         >
-          Reset All
+          Reset
         </button>
       </div>
 
       <div className="space-y-6">
         {/* Property Type */}
-        <div className="filter-group">
-          <label className="filter-label">
-            <Home className="w-4 h-4 mr-2" />
-            Property Type
+        <div>
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <Home className="w-4 h-4 mr-2 text-blue-600" />
+            Tipe Properti
           </label>
           <div className="grid grid-cols-2 gap-2">
-            {propertyTypes.map((type) => (
+            {propertyTypes.map(({ value, label }) => (
               <button
-                key={type}
-                onClick={() => handleChange({
-                  target: { name: "propertyType", value: type.toLowerCase() }
-                })}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
-                  ${filters.propertyType === type.toLowerCase()
+                key={value}
+                onClick={() => handlePropertyTypeChange(value)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all
+                  ${filters.propertyType === value
                     ? "bg-blue-600 text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
               >
-                {type}
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Availability */}
+        <div>
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <Tag className="w-4 h-4 mr-2 text-blue-600" />
+            Ketersediaan
+          </label>
+          <div className="grid grid-cols-1 gap-2">
+            {availabilityTypes.map(({ value, label }) => (
+              <button
+                key={value}
+                onClick={() => handleAvailabilityChange(value)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all
+                  ${filters.availability === value
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+              >
+                {label}
               </button>
             ))}
           </div>
         </div>
 
         {/* Price Range */}
-        <div className="filter-group">
-          <label className="filter-label">
-            <IndianRupee className="w-4 h-4 mr-2" />
-            Price Range
+        <div>
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <Banknote className="w-4 h-4 mr-2 text-blue-600" />
+            Rentang Harga
           </label>
           <div className="grid grid-cols-2 gap-2">
             {priceRanges.map(({ min, max, label }) => (
               <button
                 key={label}
                 onClick={() => handlePriceRangeChange(min, max)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all
                   ${filters.priceRange[0] === min && filters.priceRange[1] === max
                     ? "bg-blue-600 text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
@@ -106,16 +169,58 @@ const FilterSection = ({ filters, setFilters, onApplyFilters }) => {
           </div>
         </div>
 
-        {/* Rest of your existing filter groups */}
-        {/* ... */}
+        {/* Bedrooms */}
+        <div>
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <BedDouble className="w-4 h-4 mr-2 text-blue-600" />
+            Kamar Tidur
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {bedroomOptions.map((value) => (
+              <button
+                key={value}
+                onClick={() => handleBedroomsChange(value)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all min-w-[48px]
+                  ${filters.bedrooms === value && value !== "0"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+              >
+                {value === "0" ? "Semua" : value}
+              </button>
+            ))}
+          </div>
+        </div>
 
-        <div className="flex space-x-4 mt-8">
+        {/* Bathrooms */}
+        <div>
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <Bath className="w-4 h-4 mr-2 text-blue-600" />
+            Kamar Mandi
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {bathroomOptions.map((value) => (
+              <button
+                key={value}
+                onClick={() => handleBathroomsChange(value)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all min-w-[48px]
+                  ${filters.bathrooms === value && value !== "0"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+              >
+                {value === "0" ? "Semua" : value}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Apply Button */}
+        <div className="pt-4">
           <button
             onClick={() => onApplyFilters(filters)}
-            className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 
+            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 
               transition-colors font-medium"
           >
-            Apply Filters
+            Terapkan Filter
           </button>
         </div>
       </div>
