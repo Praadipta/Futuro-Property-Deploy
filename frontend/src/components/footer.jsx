@@ -553,8 +553,6 @@ const Footer = () => {
               transition={{ duration: 0.5 }}
             >
               <span>© {new Date().getFullYear()} Futuro Property. Hak Cipta Dilindungi.</span>
-              <Heart className="w-4 h-4 text-red-400 animate-pulse" />
-              <span className="text-gray-400">Dibuat dengan cinta</span>
             </motion.p>
 
             <motion.a
