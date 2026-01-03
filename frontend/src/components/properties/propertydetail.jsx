@@ -64,18 +64,39 @@ const PropertyDetails = () => {
     setActiveImage(0);
   }, [id]);
 
+  // Recursively parse amenities from various formats (handles deeply nested JSON strings)
   const parseAmenities = (amenities) => {
-    if (!amenities || !Array.isArray(amenities)) return [];
+    if (!amenities) return [];
 
-    try {
-      if (typeof amenities[0] === "string") {
-        return JSON.parse(amenities[0].replace(/'/g, '"'));
+    // Helper function to recursively parse until we get clean strings
+    const deepParse = (data) => {
+      if (Array.isArray(data)) {
+        return data.flatMap(item => deepParse(item));
       }
-      return amenities;
-    } catch (error) {
-      console.error("Error parsing amenities:", error);
+
+      if (typeof data === 'string') {
+        // Try to parse as JSON
+        try {
+          const parsed = JSON.parse(data.replace(/'/g, '"'));
+          // If parsed successfully, recursively process
+          return deepParse(parsed);
+        } catch (e) {
+          // Not valid JSON, treat as a clean string
+          const trimmed = data.trim();
+          return trimmed ? [trimmed] : [];
+        }
+      }
+
       return [];
-    }
+    };
+
+    // Process and filter unique, non-empty strings
+    const result = deepParse(amenities);
+    const uniqueAmenities = [...new Set(result)].filter(item =>
+      typeof item === 'string' && item.trim() !== ''
+    );
+
+    return uniqueAmenities;
   };
 
   const handleKeyNavigation = useCallback((e) => {
