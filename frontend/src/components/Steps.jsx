@@ -280,8 +280,8 @@ export default function HowItWorks() {
             whileInView={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            Menemukan properti sempurna Anda sangat mudah dengan proses tiga langkah kami yang{" "}
-            <span className="font-semibold text-blue-600">didukung AI</span>
+            Temukan properti idaman Anda dengan mudah melalui proses tiga langkah yang{" "}
+            <span className="font-semibold text-blue-600">simpel dan cepat</span>
           </motion.p>
 
           {/* Stats */}
@@ -392,7 +392,7 @@ export default function HowItWorks() {
               transition={{ duration: 2, repeat: Infinity }}
             />
 
-            <span className="relative z-10">Mulai Perjalanan Anda</span>
+            <span className="relative z-10">Mulai Sekarang</span>
             <motion.div
               animate={{ x: [0, 4, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -409,7 +409,7 @@ export default function HowItWorks() {
             transition={{ delay: 0.8 }}
           >
             <CheckCircle2 className="w-4 h-4 text-green-500" />
-            Tidak perlu registrasi • Gratis untuk memulai
+            Tanpa registrasi • Gratis selamanya
           </motion.p>
         </motion.div>
 
@@ -437,7 +437,7 @@ export default function HowItWorks() {
             >
               <div className="text-6xl text-blue-600/20 font-serif leading-none">&ldquo;</div>
               <p className="text-gray-700 italic text-xl lg:text-2xl mb-6 leading-relaxed -mt-4">
-                Proses 3 langkah ini sangat lancar. Dalam seminggu, saya menemukan dan mendapatkan apartemen impian saya!
+                Prosesnya sangat mudah! Hanya dalam satu minggu, saya berhasil menemukan apartemen impian saya.
               </p>
 
               {/* Author info */}

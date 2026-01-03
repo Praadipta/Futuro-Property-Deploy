@@ -94,7 +94,7 @@ const Features = () => {
           <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6 leading-tight">
             Mengapa Memilih{' '}
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Keunggulan
+              Kami?
             </span>
           </h2>
 
@@ -106,8 +106,8 @@ const Features = () => {
           </div>
 
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed font-light">
-            Rasakan layanan tak tertandingi dengan pendekatan inovatif kami dalam menemukan{' '}
-            <span className="text-blue-600 font-semibold">rumah sempurna</span> Anda
+            Nikmati pengalaman terbaik dalam menemukan{' '}
+            <span className="text-blue-600 font-semibold">hunian idaman</span> Anda bersama kami
           </p>
 
           {/* Trust indicators */}
@@ -119,15 +119,15 @@ const Features = () => {
           >
             <div className="flex items-center gap-2">
               <Award className="w-5 h-5 text-yellow-500" />
-              <span className="font-medium">Layanan Penghargaan</span>
+              <span className="font-medium">Layanan Terpercaya</span>
             </div>
             <div className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-green-500" />
-              <span className="font-medium">98% Tingkat Sukses</span>
+              <span className="font-medium">98% Pelanggan Puas</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span className="font-medium">Dipercaya 10K+ Keluarga</span>
+              <span className="font-medium">Dipercaya 10.000+ Keluarga</span>
             </div>
           </motion.div>
         </motion.div>
@@ -200,7 +200,7 @@ const Features = () => {
                     className="inline-flex items-center text-blue-600 text-sm font-semibold hover:text-blue-800 transition-colors group/link"
                     whileHover={{ x: 5 }}
                   >
-                    Jelajahi Fitur
+                    Pelajari Lebih Lanjut
                     <ChevronRight className="ml-2 h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-300" />
                   </motion.a>
 
@@ -240,12 +240,12 @@ const Features = () => {
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
               Siap Menemukan{' '}
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Ruangan Impian?
+                Hunian Impian?
               </span>
             </h3>
 
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Bergabunglah dengan ribuan pelanggan puas yang menemukan rumah sempurna mereka dengan fitur premium dan layanan personal kami.
+              Bergabunglah dengan ribuan keluarga yang telah menemukan hunian sempurna mereka bersama kami.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -268,7 +268,7 @@ const Features = () => {
                 whileTap={{ scale: 0.98 }}
                 className="px-8 py-4 bg-white text-gray-700 font-bold rounded-2xl shadow-lg hover:shadow-xl border border-gray-200 hover:border-blue-300 transition-all text-lg inline-flex items-center group"
               >
-                Hubungi Ahli
+                Hubungi Tim Kami
                 <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
               </motion.a>
             </div>
@@ -286,7 +286,7 @@ const Features = () => {
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="font-medium">Rating Rata-rata 5 Bintang</span>
+                <span className="font-medium">Rating 5 Bintang</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>

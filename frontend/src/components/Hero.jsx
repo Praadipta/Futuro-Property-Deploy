@@ -175,7 +175,7 @@ const Hero = () => {
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-md text-blue-700 rounded-full text-sm font-semibold mb-8 shadow-lg border border-blue-100"
               >
                 <Shield className="w-4 h-4" />
-                <span>Dipercaya oleh 50.000+ keluarga</span>
+                <span>Dipercaya oleh 50.000+ Keluarga Indonesia</span>
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
@@ -189,7 +189,7 @@ const Hero = () => {
                   <RadialGradient
                     gradient={["circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%"]}
                   >
-                    Temukan Ruangan Impian
+                    Temukan Hunian Impian
                   </RadialGradient>
                   <br />
                   <span className="text-gray-900 bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent">
@@ -201,9 +201,9 @@ const Hero = () => {
                   variants={itemVariants}
                   className="text-gray-700 text-xl sm:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed font-medium"
                 >
-                  Temukan properti istimewa di lokasi strategis dengan
-                  <span className="text-blue-600 font-semibold"> pencarian berbasis AI</span> dan
-                  <span className="text-purple-600 font-semibold"> panduan ahli</span>
+                  Temukan properti istimewa di lokasi terbaik dengan
+                  <span className="text-blue-600 font-semibold"> teknologi pencarian cerdas</span> dan
+                  <span className="text-purple-600 font-semibold"> dukungan profesional</span>
                 </motion.p>
               </motion.div>
 
@@ -247,7 +247,7 @@ const Hero = () => {
                           setIsSearchFocused(true);
                         }}
                         onBlur={() => setIsSearchFocused(false)}
-                        placeholder="Masukkan kota, lokasi, atau landmark..."
+                        placeholder="Cari berdasarkan kota, area, atau landmark..."
                         className="w-full pl-12 pr-6 py-4 rounded-2xl border-2 border-gray-200 bg-white/90 
                           focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 
                           text-lg placeholder-gray-500 font-medium"
@@ -297,7 +297,7 @@ const Hero = () => {
                               <TrendingUp className="w-5 h-5 text-orange-500" />
                               Lokasi Populer
                             </h3>
-                            <span className="text-sm text-gray-500">Pilih dari area populer</span>
+                            <span className="text-sm text-gray-500">Pilih lokasi favorit</span>
                           </div>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
