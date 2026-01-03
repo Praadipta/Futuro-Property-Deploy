@@ -2,6 +2,45 @@ import fs from "fs";
 import imagekit from "../config/imagekit.js";
 import Property from "../models/propertymodel.js";
 
+// Helper function to parse amenities from various formats
+const parseAmenities = (amenities) => {
+    if (!amenities) return [];
+
+    // If it's already an array of clean strings, return as-is
+    if (Array.isArray(amenities)) {
+        // Check if the first element is a JSON string that needs parsing
+        if (amenities.length > 0 && typeof amenities[0] === 'string') {
+            try {
+                // Try to parse if it looks like a JSON array string
+                const parsed = JSON.parse(amenities[0]);
+                if (Array.isArray(parsed)) {
+                    return parsed.flat().filter(item => typeof item === 'string' && item.trim() !== '');
+                }
+            } catch (e) {
+                // Not a JSON string, return the array as-is
+                return amenities.filter(item => typeof item === 'string' && item.trim() !== '');
+            }
+        }
+        return amenities.filter(item => typeof item === 'string' && item.trim() !== '');
+    }
+
+    // If it's a JSON string, parse it
+    if (typeof amenities === 'string') {
+        try {
+            const parsed = JSON.parse(amenities);
+            if (Array.isArray(parsed)) {
+                return parsed.flat().filter(item => typeof item === 'string' && item.trim() !== '');
+            }
+            return [amenities];
+        } catch (e) {
+            // Not valid JSON, treat as single amenity
+            return amenities.trim() ? [amenities.trim()] : [];
+        }
+    }
+
+    return [];
+};
+
 const getFallbackImages = () => {
     const images = [
         "https://images.unsplash.com/photo-1613977257363-707ba9348227?q=80&w=2670&auto=format&fit=crop",
@@ -77,7 +116,7 @@ const addproperty = async (req, res) => {
             type,
             availability,
             description,
-            amenities,
+            amenities: parseAmenities(amenities),
             image: imageUrls,
             phone
         });
@@ -136,7 +175,7 @@ const updateproperty = async (req, res) => {
             property.type = type;
             property.availability = availability;
             property.description = description;
-            property.amenities = amenities;
+            property.amenities = parseAmenities(amenities);
             property.phone = phone;
             // Keep existing images
             await property.save();
@@ -204,7 +243,7 @@ const updateproperty = async (req, res) => {
         property.type = type;
         property.availability = availability;
         property.description = description;
-        property.amenities = amenities;
+        property.amenities = parseAmenities(amenities);
         property.image = imageUrls;
         property.phone = phone;
 
